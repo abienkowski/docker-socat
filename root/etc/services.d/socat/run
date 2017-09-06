@@ -4,4 +4,4 @@ umask 002
 
 s6-echo "Forwarding $LISTEN_PORT -> $FORWARD_HOST:$FORWARD_PORT"
 
-exec socat ${OPTIONS} tcp-listen:${LISTEN_PORT},fork tcp-connect:${FORWARD_HOST}:${FORWARD_PORT}
+exec socat ${OPTIONS} tcp-listen:${LISTEN_PORT},fork,reuseaddr tcp-connect:${FORWARD_HOST}:${FORWARD_PORT}
