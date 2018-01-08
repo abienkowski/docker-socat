@@ -1,7 +1,21 @@
 #!/usr/bin/with-contenv sh
 
+echo "will cite" | parallel --citation
+
 umask 002
 
-s6-echo "Forwarding $LISTEN_PORT -> $FORWARD_HOST:$FORWARD_PORT"
 
-exec socat ${OPTIONS} tcp-listen:${LISTEN_PORT},fork,reuseaddr tcp-connect:${FORWARD_HOST}:${FORWARD_PORT}
+s6-echo "Forwarding $LISTEN_PORTS -> $FORWARD_HOST"
+
+# -- store the current delimiter
+OIFS=$IFS
+IFS=,
+
+# -- parse required values
+NUM_PORTS=$(echo $LISTEN_PORTS | wc -w)
+PORT_LIST=$(echo $LISTEN_PORTS)
+
+# -- restore the delimiter
+IFS=$OIFS
+
+exec parallel -j $NUM_PORTS socat tcp-listen:{},fork,reuseaddr tcp-connect:$FORWARD_HOST:{} ::: $PORT_LIST
